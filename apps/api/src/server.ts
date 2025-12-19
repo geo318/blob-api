@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { BunnyBlobStore } from "@blob-api/fs-adapter-blob-bunny";
 import { LocalBlobStore } from "@blob-api/fs-adapter-blob-local";
 import { S3BlobStore } from "@blob-api/fs-adapter-blob-s3";
@@ -8,10 +7,11 @@ import {
 	PostgresTransactionManager,
 } from "@blob-api/fs-adapter-postgres";
 import { FsProvider } from "@blob-api/fs-core";
+import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
 import multipart from "@fastify/multipart";
-import cors from "@fastify/cors";
 import Fastify from "fastify";
+import { env } from "./env.js";
 import { errorHandler } from "./error-handler.js";
 import { authenticate } from "./middleware/auth.js";
 import { adminRoutes } from "./routes/admin.js";
@@ -24,7 +24,7 @@ const fastify = Fastify({
 
 // Register JWT
 fastify.register(jwt, {
-	secret: process.env.JWT_SECRET || "your-secret-key-change-in-production",
+	secret: env.JWT_SECRET,
 });
 
 // Register CORS for browser clients
@@ -44,23 +44,23 @@ fastify.decorate("authenticate", authenticate);
 const metadataRepo = new PostgresMetadataRepo();
 const blobRepo = new PostgresBlobRepo();
 const blobStore =
-	process.env.BLOB_STORE === "local"
+	env.BLOB_STORE === "local"
 		? new LocalBlobStore({
-				basePath: process.env.BLOB_STORE_PATH || "data/blobs",
+				basePath: env.BLOB_STORE_PATH,
 			})
-		: process.env.BLOB_STORE === "bunny"
+		: env.BLOB_STORE === "bunny"
 			? new BunnyBlobStore({
-					storageZone: process.env.BUNNY_STORAGE_ZONE || "",
-					accessKey: process.env.BUNNY_ACCESS_KEY || "",
-					endpoint: process.env.BUNNY_ENDPOINT,
+					storageZone: env.BUNNY_STORAGE_ZONE || "",
+					accessKey: env.BUNNY_ACCESS_KEY || "",
+					endpoint: env.BUNNY_ENDPOINT,
 				})
 			: new S3BlobStore({
-					endpoint: process.env.S3_ENDPOINT,
-					region: process.env.S3_REGION || "us-east-1",
-					accessKeyId: process.env.S3_ACCESS_KEY_ID || "",
-					secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
-					bucket: process.env.S3_BUCKET || "",
-					forcePathStyle: process.env.S3_FORCE_PATH_STYLE === "true",
+					endpoint: env.S3_ENDPOINT,
+					region: env.S3_REGION,
+					accessKeyId: env.S3_ACCESS_KEY_ID || "",
+					secretAccessKey: env.S3_SECRET_ACCESS_KEY || "",
+					bucket: env.S3_BUCKET || "",
+					forcePathStyle: env.S3_FORCE_PATH_STYLE,
 				});
 const transactionManager = new PostgresTransactionManager();
 
@@ -83,9 +83,8 @@ fastify.setErrorHandler(errorHandler);
 // Start server
 const start = async () => {
 	try {
-		const port = parseInt(process.env.PORT || "3001", 10);
-		await fastify.listen({ port, host: "0.0.0.0" });
-		console.log(`Server listening on port ${port}`);
+		await fastify.listen({ port: env.PORT, host: "0.0.0.0" });
+		console.log(`Server listening on port ${env.PORT}`);
 	} catch (err) {
 		fastify.log.error(err);
 		process.exit(1);
