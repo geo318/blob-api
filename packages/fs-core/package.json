@@ -1,0 +1,20 @@
+{
+  "name": "@blob-api/fs-core",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.26",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
+  }
+}
