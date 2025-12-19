@@ -14,6 +14,7 @@ import Fastify from "fastify";
 import { env } from "./env.js";
 import { errorHandler } from "./error-handler.js";
 import { authenticate } from "./middleware/auth.js";
+import { registerCronJobs } from "./plugins/cron-jobs.js";
 import { adminRoutes } from "./routes/admin.js";
 import { authRoutes } from "./routes/auth.js";
 import { fsRoutes } from "./routes/fs.js";
@@ -76,6 +77,9 @@ const fsProvider = new FsProvider({
 fastify.register(authRoutes, { prefix: "/auth" });
 fastify.register((f) => fsRoutes(f, fsProvider));
 fastify.register((f) => adminRoutes(f, blobRepo, blobStore));
+
+// Optional cron-based cleanup of orphaned blobs
+registerCronJobs(fastify, { blobRepo, blobStore });
 
 // Error handler
 fastify.setErrorHandler(errorHandler);

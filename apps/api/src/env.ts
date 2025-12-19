@@ -22,6 +22,8 @@ const envSchema = z
 		BUNNY_STORAGE_ZONE: z.string().optional(),
 		BUNNY_ACCESS_KEY: z.string().optional(),
 		BUNNY_ENDPOINT: z.string().default("storage.bunnycdn.com"),
+		CLEANUP_ORPHANS_CRON: z.string().optional(),
+		CLEANUP_ORPHANS_LIMIT: z.coerce.number().int().positive().default(100),
 	})
 	.superRefine((val, ctx) => {
 		if (val.BLOB_STORE === "s3") {

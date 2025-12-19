@@ -73,6 +73,10 @@ Select via `BLOB_STORE` in `apps/api/.env`:
 - `bunny`: set `BUNNY_STORAGE_ZONE`, `BUNNY_ACCESS_KEY`, `BUNNY_ENDPOINT`.
 - `s3`: set `S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `S3_REGION`, `S3_FORCE_PATH_STYLE`.
 
+## Cleanup of orphaned blobs
+- Manual: `POST /admin/cleanup-orphan-blobs` (JWT required, optional `?limit=`).
+- Background cron (opt-in): set `CLEANUP_ORPHANS_CRON` (cron syntax, e.g., `0 * * * *`) and `CLEANUP_ORPHANS_LIMIT` in `apps/api/.env`. Leave blank to disable (default).
+
 ## Auth usage
 - Register: `POST /auth/register` with JSON `{ "email": "...", "password": "..." }`
 - Login: `POST /auth/login` with JSON `{ "email": "...", "password": "..." }`
