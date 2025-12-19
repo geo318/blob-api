@@ -1,4 +1,4 @@
-import { env } from "../env";
+import { env } from "@/env";
 
 const API_URL = env.NEXT_PUBLIC_API_URL;
 
@@ -25,15 +25,18 @@ export class ApiClient {
 
 	async fetchJson<T>(url: string, options: RequestInit = {}): Promise<T> {
 		const token = this.getToken();
-		const headers = new Headers(options.headers || {});
-		headers.set("Content-Type", "application/json");
-		if (token) {
-			headers.set("Authorization", `Bearer ${token}`);
-		}
+		const headers: HeadersInit = {
+			"Content-Type": "application/json",
+			Authorization: "",
+			...options.headers,
+		};
 
 		const response = await fetch(`${API_URL}${url}`, {
 			...options,
-			headers,
+			headers: {
+				...headers,
+				...(token && { Authorization: `Bearer ${token}` }),
+			},
 		});
 
 		if (!response.ok) {
@@ -49,14 +52,16 @@ export class ApiClient {
 
 	async fetchBlob(url: string, options: RequestInit = {}): Promise<Blob> {
 		const token = this.getToken();
-		const headers = new Headers(options.headers || {});
-		if (token) {
-			headers.set("Authorization", `Bearer ${token}`);
-		}
+		const headers: HeadersInit = {
+			...options.headers,
+		};
 
 		const response = await fetch(`${API_URL}${url}`, {
 			...options,
-			headers,
+			headers: {
+				...headers,
+				...(token && { Authorization: `Bearer ${token}` }),
+			},
 		});
 
 		if (!response.ok) {
