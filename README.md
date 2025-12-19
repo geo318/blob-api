@@ -1,12 +1,14 @@
-# Multi-tenant DB-backed File System + S3 Blob Store
+# Multi-tenant DB-backed File System + Pluggable Blob Stores
 
-A TypeScript monorepo implementing a multi-tenant filesystem with PostgreSQL metadata storage and S3-compatible blob storage.
+A TypeScript monorepo implementing a multi-tenant filesystem with PostgreSQL metadata storage and pluggable blob storage (local filesystem, S3-compatible, Bunny Storage).
 
 ## Architecture
 
 - `packages/fs-core` - Domain logic and FsProvider (framework-agnostic)
 - `packages/fs-adapter-postgres` - Drizzle ORM schema and Postgres repositories
 - `packages/fs-adapter-blob-s3` - S3-compatible blob store adapter
+- `packages/fs-adapter-blob-bunny` - Bunny Storage adapter
+- `packages/fs-adapter-blob-local` - Local filesystem adapter
 - `apps/api` - Fastify REST API with JWT auth
 - `apps/web` - Next.js UI for file management
 
@@ -16,44 +18,65 @@ A TypeScript monorepo implementing a multi-tenant filesystem with PostgreSQL met
 - pnpm >= 8
 - Docker (for PostgreSQL)
 
-## Setup
+## Environment
 
-1. **Install dependencies:**
+- API (`apps/api/.env`): see `apps/api/.env.example` for all variables (DB URL, JWT secret, blob store selection, S3/Bunny/local options, port). Validated at runtime (`apps/api/src/env.ts`).
+- Web (`apps/web/.env`): see `apps/web/.env.example` (`NEXT_PUBLIC_API_URL`). Validated at runtime (`apps/web/src/env.ts`).
+- Postgres adapter (`packages/fs-adapter-postgres/src/env.ts`) validates `DATABASE_URL`.
+
+Missing required vars for the selected blob store will throw at boot.
+
+## Setup & Run
+
+1. Install dependencies:
    ```bash
    pnpm install
    ```
-
-2. **Start PostgreSQL:**
+2. Copy envs and edit:
    ```bash
-   docker-compose up -d
+   cp apps/api/.env.example apps/api/.env
+   cp apps/web/.env.example apps/web/.env
    ```
-
-3. **Set up environment variables:**
+3. Start Postgres (Docker):
    ```bash
-   cp .env.example apps/api/.env
-   cp .env.example apps/web/.env
-   # Edit the .env files with your configuration
+   docker-compose up -d postgres
    ```
-
-4. **Run migrations:**
+4. Run migrations:
    ```bash
-   pnpm --filter fs-adapter-postgres migrate:push
+   pnpm db:migrate
    ```
-
-5. **Run tests:**
+5. Development:
+   ```bash
+   pnpm dev              # api + web
+   # or individually
+   pnpm dev:api
+   pnpm dev:web
+   ```
+6. Production-ish start (build + migrate + start api+web):
+   ```bash
+   pnpm start:all
+   ```
+   Individual:
+   ```bash
+   pnpm start:api
+   pnpm start:web
+   ```
+7. Tests:
    ```bash
    pnpm --filter fs-core test
    ```
 
-6. **Start development servers:**
-   ```bash
-   # Start both API and Web
-   pnpm dev
+## Storage backends
 
-   # Or start individually:
-   pnpm --filter api dev
-   pnpm --filter web dev
-   ```
+Select via `BLOB_STORE` in `apps/api/.env`:
+- `local`: uses `BLOB_STORE_PATH` for on-disk blobs.
+- `bunny`: set `BUNNY_STORAGE_ZONE`, `BUNNY_ACCESS_KEY`, `BUNNY_ENDPOINT`.
+- `s3`: set `S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `S3_REGION`, `S3_FORCE_PATH_STYLE`.
+
+## Auth usage
+- Register: `POST /auth/register` with JSON `{ "email": "...", "password": "..." }`
+- Login: `POST /auth/login` with JSON `{ "email": "...", "password": "..." }`
+- Include `Authorization: Bearer <token>` on all `/fs/*` and `/admin/*` requests.
 
 ## API Endpoints
 
