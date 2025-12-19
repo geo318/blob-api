@@ -1,2 +1,1 @@
-export * from './s3-blob-store.js';
-
+export * from "./s3-blob-store.js";

@@ -15,9 +15,7 @@ export interface S3BlobStoreConfig {
 	forcePathStyle?: boolean;
 }
 
-const isAsyncIterable = (
-	value: unknown,
-): value is AsyncIterable<Uint8Array> =>
+const isAsyncIterable = (value: unknown): value is AsyncIterable<Uint8Array> =>
 	typeof (value as { [Symbol.asyncIterator]?: unknown })?.[
 		Symbol.asyncIterator
 	] === "function";

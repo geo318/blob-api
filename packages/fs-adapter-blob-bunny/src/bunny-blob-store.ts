@@ -28,10 +28,7 @@ export class BunnyBlobStore implements BlobStore {
 		return `${this.baseUrl}/${this.storageZone}/${this.deriveStorageKey(sha256)}`;
 	}
 
-	private async request(
-		sha256: string,
-		init: RequestInit,
-	): Promise<Response> {
+	private async request(sha256: string, init: RequestInit): Promise<Response> {
 		return fetch(this.buildUrl(sha256), {
 			...init,
 			headers: {

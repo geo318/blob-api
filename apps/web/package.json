@@ -1,11 +1,11 @@
 {
 	"name": "@blob-api/web",
 	"version": "1.0.0",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start"
+	},
 	"dependencies": {
 		"next": "^16.0.10",
 		"react": "^19.2.3",
