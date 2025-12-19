@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { apiClient } from "@/lib/api-client";
+import { hasKey } from "@/utils";
 
 interface CreateFolderDialogProps {
 	currentPath: string;
@@ -33,8 +34,11 @@ export function CreateFolderDialog({
 			});
 			onCreated();
 			onClose();
-		} catch (err: any) {
-			setError(err.message || "Failed to create folder");
+		} catch (err) {
+			setError(
+				(hasKey<string>(err, "message") && err.message) ||
+					"Failed to create folder",
+			);
 		} finally {
 			setLoading(false);
 		}
@@ -63,8 +67,11 @@ export function CreateFolderDialog({
 			>
 				<h2 style={{ marginBottom: "20px" }}>Create Folder</h2>
 				<form onSubmit={handleSubmit}>
-					<label className="label">Folder Name</label>
+					<label className="label" htmlFor="name">
+						Folder Name
+					</label>
 					<input
+						id="name"
 						type="text"
 						className="input"
 						value={name}

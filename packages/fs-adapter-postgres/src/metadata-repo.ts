@@ -4,8 +4,8 @@ import type {
 	MetadataRepo,
 } from "@blob-api/fs-core";
 import { and, eq } from "drizzle-orm";
-import { getDb } from "./transaction-context.js";
 import { entries } from "./schema.js";
+import { getDb } from "./transaction-context.js";
 
 export class PostgresMetadataRepo implements MetadataRepo {
 	async createEntry(
@@ -36,8 +36,8 @@ export class PostgresMetadataRepo implements MetadataRepo {
 			blobId: result.blobId,
 			size: Number(result.size),
 			mimeType: result.mimeType,
-			createdAt: result.createdAt!,
-			updatedAt: result.updatedAt!,
+			createdAt: result.createdAt,
+			updatedAt: result.updatedAt,
 		};
 	}
 
@@ -103,8 +103,8 @@ export class PostgresMetadataRepo implements MetadataRepo {
 			blobId: result.blobId,
 			size: Number(result.size),
 			mimeType: result.mimeType,
-			createdAt: result.createdAt!,
-			updatedAt: result.updatedAt!,
+			createdAt: result.createdAt,
+			updatedAt: result.updatedAt,
 		}));
 	}
 
@@ -113,7 +113,7 @@ export class PostgresMetadataRepo implements MetadataRepo {
 		updates: Partial<MetadataEntry>,
 	): Promise<MetadataEntry> {
 		const db = getDb();
-		const updateData: any = {};
+		const updateData: Record<string, unknown> = {};
 		if (updates.path !== undefined) updateData.path = updates.path;
 		if (updates.name !== undefined) updateData.name = updates.name;
 		if (updates.parentPath !== undefined)
@@ -143,8 +143,8 @@ export class PostgresMetadataRepo implements MetadataRepo {
 			blobId: result.blobId,
 			size: Number(result.size),
 			mimeType: result.mimeType,
-			createdAt: result.createdAt!,
-			updatedAt: result.updatedAt!,
+			createdAt: result.createdAt,
+			updatedAt: result.updatedAt,
 		};
 	}
 
@@ -153,9 +153,8 @@ export class PostgresMetadataRepo implements MetadataRepo {
 		await db.delete(entries).where(eq(entries.id, id));
 	}
 
-	async findBlobBySha256(sha256: string): Promise<BlobRecord | null> {
-		// This method is not used in the current implementation
-		// It's kept for interface compatibility
+	async findBlobBySha256(_sha256: string): Promise<BlobRecord | null> {
+		// not implemented currently
 		return null;
 	}
 }

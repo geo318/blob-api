@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiClient } from "@/lib/api-client";
+import { hasKey } from "@/utils";
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -20,8 +21,10 @@ export default function LoginPage() {
 		try {
 			await apiClient.login(email, password);
 			router.push("/files");
-		} catch (err: any) {
-			setError(err.message || "Login failed");
+		} catch (err) {
+			setError(
+				(hasKey<string>(err, "message") && err.message) || "Login failed",
+			);
 		} finally {
 			setLoading(false);
 		}

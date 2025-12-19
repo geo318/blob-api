@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api-client";
+import { hasKey } from "@/utils";
 
 export interface FsNode {
 	id: string;
@@ -37,7 +38,7 @@ export function FileBrowser({
 			const result = await apiClient.fetchJson<{ items: FsNode[] }>(
 				`/fs/dir?path=${encodeURIComponent(currentPath)}`,
 			);
-			// Sort: directories first, then files
+			// sort directories first, then files
 			const sorted = result.items.sort((a, b) => {
 				if (a.type !== b.type) {
 					return a.type === "dir" ? -1 : 1;
@@ -45,8 +46,11 @@ export function FileBrowser({
 				return a.name.localeCompare(b.name);
 			});
 			setItems(sorted);
-		} catch (err: any) {
-			setError(err.message || "Failed to load directory");
+		} catch (err) {
+			setError(
+				(hasKey<string>(err, "message") && err.message) ||
+					"Failed to load directory",
+			);
 		} finally {
 			setLoading(false);
 		}
@@ -109,10 +113,11 @@ export function FileBrowser({
 				>
 					{pathParts.map((part, index) => {
 						const path =
-							index === 0 ? "/" : "/" + pathParts.slice(1, index + 1).join("/");
+							index === 0 ? "/" : `/${pathParts.slice(1, index + 1).join("/")}`;
 						return (
-							<span key={index}>
+							<span key={part}>
 								<button
+									type="button"
 									onClick={() => onPathChange(path)}
 									style={{
 										background: "none",
@@ -148,6 +153,7 @@ export function FileBrowser({
 							<tr key={item.id} style={{ borderBottom: "1px solid #eee" }}>
 								<td style={{ padding: "10px" }}>
 									<button
+										type="button"
 										onClick={() => {
 											if (item.type === "dir") {
 												onPathChange(item.path);
@@ -173,6 +179,7 @@ export function FileBrowser({
 									<div style={{ display: "flex", gap: "10px" }}>
 										{item.type === "file" && (
 											<button
+												type="button"
 												onClick={() => handleDownload(item)}
 												className="button"
 												style={{ padding: "5px 10px", fontSize: "12px" }}
@@ -181,6 +188,7 @@ export function FileBrowser({
 											</button>
 										)}
 										<button
+											type="button"
 											onClick={() => handleDelete(item)}
 											className="button"
 											style={{

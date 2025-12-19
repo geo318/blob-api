@@ -239,9 +239,9 @@ describe("FsProvider", () => {
 			const file2 = await provider.writeFile("/file2.txt", content, ownerId1);
 
 			// Both files should point to the same blob
-			const info1 = await provider.getInfo("/file1.txt", ownerId1);
-			const info2 = await provider.getInfo("/file2.txt", ownerId1);
-			// In a real implementation, we'd check blobId, but in-memory fakes use different entries
+			await provider.getInfo("/file1.txt", ownerId1);
+			await provider.getInfo("/file2.txt", ownerId1);
+
 			// The important thing is that the blob store only has one copy
 			expect(file1.size).toBe(file2.size);
 		});
@@ -392,12 +392,7 @@ describe("FsProvider", () => {
 	describe("Get info", () => {
 		it("should get file info", async () => {
 			const content = new TextEncoder().encode("test");
-			const file = await provider.writeFile(
-				"/test.txt",
-				content,
-				ownerId1,
-				"text/plain",
-			);
+			await provider.writeFile("/test.txt", content, ownerId1, "text/plain");
 			const info = await provider.getInfo("/test.txt", ownerId1);
 			expect(info.type).toBe("file");
 			expect(info.size).toBe(content.length);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { apiClient } from "@/lib/api-client";
+import { hasKey } from "@/utils";
 
 interface UploadDialogProps {
 	currentPath: string;
@@ -40,7 +40,7 @@ export function UploadDialog({
 
 			const headers: HeadersInit = {};
 			if (token) {
-				headers["Authorization"] = `Bearer ${token}`;
+				headers.Authorization = `Bearer ${token}`;
 			}
 
 			const response = await fetch(`${apiUrl}/fs/file`, {
@@ -56,8 +56,10 @@ export function UploadDialog({
 
 			onUploaded();
 			onClose();
-		} catch (err: any) {
-			setError(err.message || "Upload failed");
+		} catch (err) {
+			setError(
+				(hasKey<string>(err, "message") && err.message) || "Upload failed",
+			);
 		} finally {
 			setLoading(false);
 		}
@@ -86,8 +88,11 @@ export function UploadDialog({
 			>
 				<h2 style={{ marginBottom: "20px" }}>Upload File</h2>
 				<form onSubmit={handleSubmit}>
-					<label className="label">File</label>
+					<label className="label" htmlFor="file">
+						File
+					</label>
 					<input
+						id="file"
 						type="file"
 						className="input"
 						onChange={(e) => {
@@ -101,8 +106,11 @@ export function UploadDialog({
 						}}
 						required
 					/>
-					<label className="label">Path</label>
+					<label className="label" htmlFor="file">
+						Path
+					</label>
 					<input
+						id="file"
 						type="text"
 						className="input"
 						value={path}

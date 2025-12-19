@@ -137,7 +137,6 @@ export class S3BlobStore implements BlobStore {
 				}),
 			);
 		} catch (error: any) {
-			// Ignore if not found (idempotent)
 			if (error.name === "NoSuchKey" || error.code === "NoSuchKey") {
 				return;
 			}

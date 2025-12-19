@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api-client";
 import type { FsNode } from "./FileBrowser";
 
@@ -91,6 +92,7 @@ export function FilePreview({ node, onClose }: FilePreviewProps) {
 				>
 					<h2>{node.name}</h2>
 					<button
+						type="button"
 						onClick={onClose}
 						className="button"
 						style={{ backgroundColor: "#d32f2f" }}
@@ -105,7 +107,7 @@ export function FilePreview({ node, onClose }: FilePreviewProps) {
 				{!loading && !error && (
 					<>
 						{isImage && (
-							<img
+							<Image
 								src={content}
 								alt={node.name}
 								style={{ maxWidth: "100%", height: "auto" }}
@@ -113,6 +115,7 @@ export function FilePreview({ node, onClose }: FilePreviewProps) {
 						)}
 						{isPdf && (
 							<iframe
+								title="file"
 								src={content}
 								width="100%"
 								height="600px"

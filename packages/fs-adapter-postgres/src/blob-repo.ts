@@ -1,7 +1,7 @@
 import type { BlobRecord, BlobRepo } from "@blob-api/fs-core";
 import { eq, sql } from "drizzle-orm";
-import { getDb } from "./transaction-context.js";
 import { blobs } from "./schema.js";
+import { getDb } from "./transaction-context.js";
 
 export class PostgresBlobRepo implements BlobRepo {
 	async upsertBlob(

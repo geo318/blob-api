@@ -95,10 +95,9 @@ export class InMemoryMetadataRepo implements MetadataRepo {
 	}
 
 	async findBlobBySha256(
-		sha256: string,
+		_sha256: string,
 	): Promise<import("../ports.js").BlobRecord | null> {
 		// This is not implemented in the in-memory version
-		// It's only used by the Postgres adapter
 		return null;
 	}
 }

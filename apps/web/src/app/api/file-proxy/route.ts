@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
 				"Content-Type": contentType,
 			},
 		});
-	} catch (error) {
+	} catch {
 		return NextResponse.json(
 			{ code: "INTERNAL_ERROR", message: "Failed to proxy file" },
 			{ status: 500 },

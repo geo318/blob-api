@@ -46,7 +46,7 @@ export function normalizePath(path: string): string {
 	}
 
 	// Reconstruct path
-	return normalized === "/" ? "/" : "/" + segments.join("/");
+	return normalized === "/" ? "/" : `/${segments.join("/")}`;
 }
 
 /**
@@ -91,7 +91,7 @@ export function getParentPath(path: string): string | null {
 	if (segments.length <= 1) {
 		return "/";
 	}
-	return "/" + segments.slice(0, -1).join("/");
+	return `/${segments.slice(0, -1).join("/")}`;
 }
 
 /**

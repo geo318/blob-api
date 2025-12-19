@@ -391,7 +391,7 @@ export class FsProvider {
 		}
 
 		// Prevent moving into itself
-		if (newNormalized.startsWith(normalized + "/")) {
+		if (newNormalized.startsWith(`${normalized}/`)) {
 			throw new FsError(
 				ErrorCodes.CONFLICT,
 				`Cannot move directory into itself`,
